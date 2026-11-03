@@ -262,7 +262,7 @@ function openRoom(c){
 function closeRoom(){
   ls.del("bossClassCode");
   if(player&&player.stopVideo)player.stopVideo();
-  const f=document.getElementById("yt"); if(f.tagName==="IFRAME")f.src="about:blank";
+  else{const f=document.getElementById("yt"); if(f.tagName==="IFRAME")f.src="about:blank";}
   course=null;
   document.getElementById("room").hidden=true;document.getElementById("gate").hidden=false;
   document.getElementById("code").value="";document.getElementById("code").focus();
