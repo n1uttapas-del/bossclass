@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ห้องเรียน By Boss</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: gate screen with one code field on a drafting grid; classroom = player first, course materials beside/below */
+:root{
+  --paper:#f5f7f8; --sheet:#ffffff; --ink:#18232b; --muted:#5b6b75;
+  --line:#d5dde2; --grid:rgba(32,96,140,.06);
+  --accent:#d9480f; --accent-ink:#ffffff; --blue:#1d5f8c; --screen:#0c1114;
+  --display:"Anuphan","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f1519; --sheet:#172128; --ink:#e6edf1; --muted:#97a7b1;
+  --line:#2a3741; --grid:rgba(120,180,220,.06);
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --blue:#6fb3e0; --screen:#05080a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1519; --sheet:#172128; --ink:#e6edf1; --muted:#97a7b1;
+  --line:#2a3741; --grid:rgba(120,180,220,.06);
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --blue:#6fb3e0; --screen:#05080a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* Gate */
+#gate{min-height:100vh;display:grid;place-items:center;padding-block:40px}
+.card{width:100%;max-width:420px;background:var(--sheet);border:1.5px solid var(--ink);border-radius:6px;overflow:hidden}
+.card .top{padding:28px 24px 8px}
+.brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+h1{font-family:var(--display);font-weight:700;font-size:32px;line-height:1.2;margin:6px 0 4px;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:15px}
+form{display:flex;flex-direction:column;gap:10px;padding:20px 24px 24px}
+label{font-size:14px;font-weight:600}
+input{font:inherit;font-family:var(--mono);font-size:20px;letter-spacing:.12em;text-transform:uppercase;text-align:center;
+  padding:12px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);width:100%}
+input:focus{outline:none;border-color:var(--blue)}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:12px;font-weight:600;font-size:16px}
+.primary:hover{filter:brightness(1.07)}
+.err{margin:0;font-size:14px;color:var(--accent)}
+.foot{border-top:1px solid var(--line);padding:12px 24px;font-size:13px;color:var(--muted)}
+
+/* Classroom */
+#room header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1.5px solid var(--ink)}
+.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:12px}
+.bar .brand{flex:1}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:6px 12px;font-size:14px}
+main.room{max-width:1180px;margin:0 auto;padding-block:24px 56px;display:flex;flex-direction:column;gap:20px}
+.rtitle h2{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.5vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.rtitle p{margin:4px 0 0;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.player{background:var(--screen);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.frame{position:relative;width:100%;max-width:100%;aspect-ratio:16/9}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ptabs{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
+.ptabs button{flex:1;min-width:140px;background:none;border:0;color:#b8c6cf;padding:12px 14px;text-align:left;font-size:14px;border-right:1px solid rgba(255,255,255,.08)}
+.ptabs button:last-child{border-right:0}
+.ptabs button[aria-pressed="true"]{color:#fff;box-shadow:inset 0 3px 0 var(--accent)}
+.ptabs small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#7d8f9a}
+.hint{font-size:13px;color:var(--muted);margin:8px 2px 0}
+.hint a{color:var(--blue)}
+aside{display:flex;flex-direction:column;gap:12px}
+.box{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:16px}
+.box h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 8px}
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.items li{display:flex;flex-direction:column;gap:6px}
+.items b{font-weight:600}
+.items small{color:var(--muted);font-size:13px}
+.go{align-self:flex-start;text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;font-size:14px;font-weight:600;border-radius:4px}
+.go:hover{background:var(--ink);color:var(--sheet)}
+.pw{display:flex;gap:6px;align-items:center;font-size:13px}
+.pw kbd{font-family:var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:2px 10px;font-size:15px}
+.pw button{background:none;border:1px solid var(--line);color:var(--blue);border-radius:3px;padding:2px 8px;font-size:12px}
+.tip{font-size:14px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+
+<section id="gate" class="pad">
+  <div class="card">
+    <div class="top">
+      <div class="brand">Sketchup By Boss</div>
+      <h1>เข้าห้องเรียน</h1>
+      <p>ใส่รหัสเข้าเรียนที่ได้รับหลังซื้อคอร์ส</p>
+    </div>
+    <form id="codeForm" autocomplete="off">
+      <label for="code">รหัสเข้าเรียน</label>
+      <input id="code" name="code" placeholder="••••••" spellcheck="false">
+      <button class="primary" type="submit">เข้าเรียน</button>
+      <p class="err" id="err" hidden></p>
+    </form>
+    <div class="foot">ยังไม่มีรหัส ทักแชทเพจ Sketchup พื้นฐาน By Boss</div>
+  </div>
+</section>
+
+<section id="room" hidden>
+  <header class="pad"><div class="bar">
+    <span class="brand">Sketchup By Boss</span>
+    <button class="ghost" id="logout" type="button">ออกจากห้องเรียน</button>
+  </div></header>
+  <main class="room pad">
+    <div class="rtitle"><h2 id="rTitle"></h2><p id="rSub"></p></div>
+    <div class="layout">
+      <div>
+        <div class="player">
+          <div class="frame"><iframe id="yt" title="วิดีโอบทเรียน" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <div class="ptabs" id="tabs"></div>
+        </div>
+        <p class="hint">กดไอคอนรายการที่มุมขวาบนของวิดีโอเพื่อเลือก EP · วิดีโอไม่ขึ้น? <a id="ytLink" target="_blank" rel="noopener">เปิดใน YouTube ↗</a></p>
+      </div>
+      <aside id="side"></aside>
+    </div>
+  </main>
+</section>
+
+<script>
+const COURSES={
+ "ed979e45981b759b2ccfcbf027ad4cc0a754538b0ce5d41e20641bc51e6aa579":{
+   title:"ห้องเรียน AI Render",sub:"เรนเดอร์งานออกแบบด้วย AI · เรียงตามลำดับในเพลย์ลิสต์",
+   videos:[{label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PLGIFCbS9M2nI"}],
+   side:[{h:"ไฟล์ประกอบการเรียน",items:[{name:"รวมไฟล์แถม",note:"โฟลเดอร์ Google Drive",url:"https://drive.google.com/drive/folders/16jAI7aWoHxPZizXIZgBrnjs4de0qsghr?usp=drive_link",btn:"เปิดโฟลเดอร์"}]}]},
+ "eaf119514659555e3576cffd0f0ced577621f7d7b494daff99ac2e56442c38dd":{
+   title:"SketchUp for Computer",sub:"เริ่มจากติดตั้งโปรแกรม แล้วเรียนตามลำดับ EP",
+   videos:[{label:"วิธีติดตั้งโปรแกรม",tag:"เริ่มที่นี่",id:"bLOg59TpaJM"},
+           {label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PL-SBvrSFsrgRvBLrgYzrgLWgj63A1gfIC"}],
+   side:[{h:"ก่อนเริ่มเรียน",items:[{name:"ดาวน์โหลดโปรแกรม",note:"ไฟล์บน Google Drive",pw:"sbz",url:"https://drive.google.com/file/d/1RFj3EWgqLLgwps2UVi1UMo54vRFfXGAs/view",btn:"ดาวน์โหลด"}]}],
+   tip:"ดาวน์โหลดโปรแกรม ดูวิธีติดตั้ง แล้วไปที่แท็บบทเรียนทั้งหมด"},
+ "68ae2c36254d65733509a97300cd2e1295186b9ff4054e2b6eb70174cacd032b":{
+   title:"SketchUp for iPad",sub:"เรียน SketchUp บน iPad เรียงตามลำดับในเพลย์ลิสต์",
+   videos:[{label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PL-SBvrSFsrgQgPBW-N7JWVq8ylRCdEps8"}],
+   side:[]}
+};
+const KEY="bossClassCode";
+const store={get(){try{return localStorage.getItem(KEY)}catch(e){return null}},
+  set(v){try{localStorage.setItem(KEY,v)}catch(e){}},del(){try{localStorage.removeItem(KEY)}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+
+function play(v){
+  const src=v.list?`https://www.youtube.com/embed/videoseries?list=${v.list}&rel=0`:`https://www.youtube.com/embed/${v.id}?rel=0`;
+  document.getElementById("yt").src=src;
+  document.getElementById("ytLink").href=v.list?`https://www.youtube.com/playlist?list=${v.list}`:`https://youtu.be/${v.id}`;
+}
+function openRoom(c){
+  document.getElementById("gate").hidden=true;
+  document.getElementById("room").hidden=false;
+  document.getElementById("rTitle").textContent=c.title;
+  document.getElementById("rSub").textContent=c.sub;
+  const tabs=document.getElementById("tabs");
+  tabs.innerHTML=c.videos.map((v,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===0}"><small>${esc(v.tag)}</small>${esc(v.label)}</button>`).join("");
+  tabs.hidden=c.videos.length<2;
+  tabs.onclick=e=>{const b=e.target.closest("button");if(!b)return;
+    tabs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));play(c.videos[+b.dataset.i])};
+  play(c.videos[0]);
+  const side=document.getElementById("side");
+  side.innerHTML=(c.tip?`<div class="box"><h3>ลำดับการเรียน</h3><p class="tip">${esc(c.tip)}</p></div>`:"")+
+    c.side.map(s=>`<div class="box"><h3>${esc(s.h)}</h3><ul class="items">${s.items.map(it=>`<li><b>${esc(it.name)}</b><small>${esc(it.note)}</small>
+      ${it.pw?`<div class="pw">รหัสแตกไฟล์ <kbd>${esc(it.pw)}</kbd><button type="button" data-copy="${esc(it.pw)}">คัดลอก</button></div>`:""}
+      <a class="go" href="${it.url}" target="_blank" rel="noopener">${esc(it.btn)} ↗</a></li>`).join("")}</ul></div>`).join("");
+  side.hidden=!side.innerHTML;
+  window.scrollTo(0,0);
+}
+function closeRoom(){
+  store.del();document.getElementById("yt").src="about:blank";
+  document.getElementById("room").hidden=true;document.getElementById("gate").hidden=false;
+  document.getElementById("code").value="";document.getElementById("code").focus();
+}
+document.getElementById("codeForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=document.getElementById("err");
+  const v=document.getElementById("code").value.trim().toUpperCase().replace(/[\s-]/g,"");
+  if(!v){err.textContent="กรุณาใส่รหัสเข้าเรียน";err.hidden=false;return}
+  const h=await sha(v);
+  if(COURSES[h]){err.hidden=true;store.set(h);openRoom(COURSES[h])}
+  else{err.textContent="รหัสไม่ถูกต้อง ตรวจสอบตัวอักษรอีกครั้ง หรือทักแชทเพจเพื่อขอรหัส";err.hidden=false}
+});
+document.getElementById("logout").addEventListener("click",closeRoom);
+document.addEventListener("click",e=>{
+  const cp=e.target.closest("[data-copy]");if(!cp)return;
+  const done=()=>{cp.textContent="คัดลอกแล้ว";setTimeout(()=>cp.textContent="คัดลอก",1500)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(cp.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r)};
+  try{navigator.clipboard.writeText(cp.dataset.copy).then(done,sel)}catch(_){sel()}
+});
+const saved=store.get();
+if(saved&&COURSES[saved])openRoom(COURSES[saved]);
+</script>
+</body>
+</html>
