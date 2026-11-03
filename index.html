@@ -102,6 +102,9 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
 .dl .meta code{font-family:var(--mono);font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:1px 6px}
 .dlbtn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;padding:12px 20px;border-radius:4px;font-size:16px}
 .dlbtn:hover{filter:brightness(1.07)}
+.gvid{display:flex;flex-direction:column;gap:10px}
+.gvid h3{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
+.gvid .player{max-width:960px;width:100%}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
 .chips button:hover{background:var(--hover)}
@@ -154,6 +157,11 @@ aside{display:flex;flex-direction:column;gap:12px;min-width:0}
           <span id="dlNote"></span>
         </div>
         <a class="dlbtn" id="dlBtn" download>ดาวน์โหลด Extension ↓</a>
+      </div>
+      <div class="gvid" id="gVidBox" hidden>
+        <h3>คลิปวิธีติดตั้งและใช้งาน</h3>
+        <div class="player"><div class="frame"><iframe id="gVid" title="คลิปวิธีติดตั้ง" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div>
+        <p class="hint">วิดีโอไม่ขึ้น? <a id="gVidLink" target="_blank" rel="noopener">เปิดใน YouTube ↗</a> · ดูขั้นตอนแบบรูปภาพได้ด้านล่าง</p>
       </div>
       <div class="chips" id="chips"></div>
       <ol class="steps" id="steps"></ol>
@@ -225,7 +233,7 @@ const COURSES={
         ["EP6","การจัด Scenes มุมกล้อง Styles และ Section","_SDg2JscejM","7:29"],
         ["EP7","สรุปหลังเรียน","JoSYNz9tWYc","4:46"]],
    materials:[]},
- "31bc18c2ce8d1a2cb5919ef5399874fbc3374bd30ecdc4e9926cf38d02caca5d":{key:"aiap",guide:true,
+ "31bc18c2ce8d1a2cb5919ef5399874fbc3374bd30ecdc4e9926cf38d02caca5d":{key:"aiap",guide:true,video:"WSDVJFK6i9s",
    title:"AI Auto Prompt for SketchUp",sub:"Extension สร้าง Prompt สำหรับ Gemini จากมุมกล้อง SketchUp · ดาวน์โหลดแล้วทำตาม 9 ขั้นตอน",
    download:{name:"Sketchup Ai by Boss v2.1.0",file:"aiap/sketchup_ai_by_boss.rbz",
      note:"ไฟล์ sketchup_ai_by_boss.rbz · 198 KB · รองรับ SketchUp 2022 ขึ้นไป"},
@@ -291,6 +299,8 @@ function renderEps(){
   const a=list.querySelector('[aria-current="true"]'); if(a){const r=a.offsetTop-list.offsetTop; if(r<list.scrollTop||r>list.scrollTop+list.clientHeight-50) list.scrollTop=r-8}
 }
 function openGuide(c){
+  const vb=document.getElementById("gVidBox"); vb.hidden=!c.video;
+  if(c.video){const v=document.getElementById("gVid"); const src=`https://www.youtube.com/embed/${c.video}?rel=0&playsinline=1`; if(v.src!==src)v.src=src; document.getElementById("gVidLink").href=`https://www.youtube.com/watch?v=${c.video}`;}
   const d=c.download;
   document.getElementById("dlName").textContent=d.name;
   document.getElementById("dlNote").innerHTML=esc(d.note).replace("sketchup_ai_by_boss.rbz","<code>sketchup_ai_by_boss.rbz</code>");
@@ -327,6 +337,7 @@ function openRoom(c){
 }
 function closeRoom(){
   ls.del("bossClassCode");
+  const gv=document.getElementById("gVid"); if(gv)gv.src="about:blank";
   if(player&&player.stopVideo)player.stopVideo();
   else{const f=document.getElementById("yt"); if(f.tagName==="IFRAME")f.src="about:blank";}
   course=null;
