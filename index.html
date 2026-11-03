@@ -6,31 +6,33 @@
 <title>ห้องเรียน By Boss</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: gate screen with one code field on a drafting grid; classroom = player first, course materials beside/below */
+/* Layout: gate screen with one code field; classroom = player + EP list side by side (stacked on phones), materials under the list */
 :root{
   --paper:#f5f7f8; --sheet:#ffffff; --ink:#18232b; --muted:#5b6b75;
-  --line:#d5dde2; --grid:rgba(32,96,140,.06);
-  --accent:#d9480f; --accent-ink:#ffffff; --blue:#1d5f8c; --screen:#0c1114;
+  --line:#d5dde2; --grid:rgba(32,96,140,.06); --hover:#eef3f6;
+  --accent:#d9480f; --accent-ink:#ffffff; --accent-soft:rgba(217,72,15,.09);
+  --blue:#1d5f8c; --ok:#2b8a3e; --screen:#0c1114;
   --display:"Anuphan","IBM Plex Sans Thai",system-ui,sans-serif;
   --body:"IBM Plex Sans Thai",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --paper:#0f1519; --sheet:#172128; --ink:#e6edf1; --muted:#97a7b1;
-  --line:#2a3741; --grid:rgba(120,180,220,.06);
-  --accent:#ff7a3d; --accent-ink:#1a0d05; --blue:#6fb3e0; --screen:#05080a; color-scheme:dark}}
+  --line:#2a3741; --grid:rgba(120,180,220,.06); --hover:#1d2a33;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --accent-soft:rgba(255,122,61,.12);
+  --blue:#6fb3e0; --ok:#69db7c; --screen:#05080a; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0f1519; --sheet:#172128; --ink:#e6edf1; --muted:#97a7b1;
-  --line:#2a3741; --grid:rgba(120,180,220,.06);
-  --accent:#ff7a3d; --accent-ink:#1a0d05; --blue:#6fb3e0; --screen:#05080a; color-scheme:dark}
+  --line:#2a3741; --grid:rgba(120,180,220,.06); --hover:#1d2a33;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --accent-soft:rgba(255,122,61,.12);
+  --blue:#6fb3e0; --ok:#69db7c; --screen:#05080a; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
   background-size:24px 24px}
 .pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-button{font:inherit;cursor:pointer}
+button{font:inherit;cursor:pointer;color:inherit}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 
 /* Gate */
@@ -52,29 +54,43 @@ input:focus{outline:none;border-color:var(--blue)}
 
 /* Classroom */
 #room header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1.5px solid var(--ink)}
-.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:12px}
+.bar{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:12px}
 .bar .brand{flex:1}
-.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:6px 12px;font-size:14px}
-main.room{max-width:1180px;margin:0 auto;padding-block:24px 56px;display:flex;flex-direction:column;gap:20px}
+.ghost{background:none;border:1px solid var(--line);border-radius:4px;padding:6px 12px;font-size:14px}
+.ghost:hover{background:var(--hover)}
+main.room{max-width:1240px;margin:0 auto;padding-block:24px 56px;display:flex;flex-direction:column;gap:16px}
 .rtitle h2{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.5vw,34px);line-height:1.2;margin:0;text-wrap:balance}
 .rtitle p{margin:4px 0 0;color:var(--muted)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
-@media (max-width:860px){.layout{grid-template-columns:1fr}}
-.player{background:var(--screen);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+.player{background:var(--screen);border-radius:6px;overflow:hidden}
 .frame{position:relative;width:100%;max-width:100%;aspect-ratio:16/9}
-.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.ptabs{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
-.ptabs button{flex:1;min-width:140px;background:none;border:0;color:#b8c6cf;padding:12px 14px;text-align:left;font-size:14px;border-right:1px solid rgba(255,255,255,.08)}
-.ptabs button:last-child{border-right:0}
-.ptabs button[aria-pressed="true"]{color:#fff;box-shadow:inset 0 3px 0 var(--accent)}
-.ptabs small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#7d8f9a}
-.hint{font-size:13px;color:var(--muted);margin:8px 2px 0}
+.frame iframe,.frame #yt{position:absolute;inset:0;width:100%;height:100%;border:0}
+.now{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 2px 0}
+.now h3{font-family:var(--display);font-weight:600;font-size:19px;margin:0;line-height:1.35;min-width:0;flex:1 1 260px}
+.nav{display:flex;gap:8px}
+.nav button{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:6px 12px;font-size:14px}
+.nav button:hover:not(:disabled){background:var(--hover)}
+.nav button:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted);margin:6px 2px 0}
 .hint a{color:var(--blue)}
-aside{display:flex;flex-direction:column;gap:12px}
-.box{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:16px}
-.box h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 8px}
-.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
-.items li{display:flex;flex-direction:column;gap:6px}
+aside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.box{background:var(--sheet);border:1px solid var(--line);border-radius:6px}
+.boxhead{display:flex;justify-content:space-between;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line)}
+.boxhead h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0}
+.boxhead span{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.eps{list-style:none;margin:0;padding:6px;max-height:min(62vh,560px);overflow-y:auto}
+.eps button{width:100%;display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;text-align:left;
+  background:none;border:0;border-radius:4px;padding:9px 10px}
+.eps button:hover{background:var(--hover)}
+.eps button[aria-current="true"]{background:var(--accent-soft)}
+.eps .no{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.eps button[aria-current="true"] .no{color:var(--accent)}
+.eps .t{font-size:14.5px;line-height:1.4;min-width:0}
+.eps .d{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:center}
+.eps .seen{color:var(--ok);font-size:13px}
+.materials{padding:14px 16px;display:flex;flex-direction:column;gap:14px}
+.items{display:flex;flex-direction:column;gap:6px}
 .items b{font-weight:600}
 .items small{color:var(--muted);font-size:13px}
 .go{align-self:flex-start;text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;font-size:14px;font-weight:600;border-radius:4px}
@@ -82,7 +98,6 @@ aside{display:flex;flex-direction:column;gap:12px}
 .pw{display:flex;gap:6px;align-items:center;font-size:13px}
 .pw kbd{font-family:var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:2px 10px;font-size:15px}
 .pw button{background:none;border:1px solid var(--line);color:var(--blue);border-radius:3px;padding:2px 8px;font-size:12px}
-.tip{font-size:14px;color:var(--muted);margin:0}
 </style>
 </head>
 <body>
@@ -113,67 +128,142 @@ aside{display:flex;flex-direction:column;gap:12px}
     <div class="rtitle"><h2 id="rTitle"></h2><p id="rSub"></p></div>
     <div class="layout">
       <div>
-        <div class="player">
-          <div class="frame"><iframe id="yt" title="วิดีโอบทเรียน" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
-          <div class="ptabs" id="tabs"></div>
+        <div class="player"><div class="frame"><div id="yt"></div></div></div>
+        <div class="now">
+          <h3 id="nowTitle"></h3>
+          <div class="nav">
+            <button type="button" id="prev">‹ ก่อนหน้า</button>
+            <button type="button" id="next">ถัดไป ›</button>
+          </div>
         </div>
-        <p class="hint">กดไอคอนรายการที่มุมขวาบนของวิดีโอเพื่อเลือก EP · วิดีโอไม่ขึ้น? <a id="ytLink" target="_blank" rel="noopener">เปิดใน YouTube ↗</a></p>
+        <p class="hint">จบคลิปแล้วจะเล่น EP ถัดไปให้อัตโนมัติ · วิดีโอไม่ขึ้น? <a id="ytLink" target="_blank" rel="noopener">เปิดใน YouTube ↗</a></p>
       </div>
-      <aside id="side"></aside>
+      <aside>
+        <div class="box">
+          <div class="boxhead"><h3>บทเรียน</h3><span id="progress"></span></div>
+          <ol class="eps" id="eps"></ol>
+        </div>
+        <div class="box" id="matBox" hidden>
+          <div class="boxhead"><h3>ไฟล์ประกอบการเรียน</h3></div>
+          <div class="materials" id="materials"></div>
+        </div>
+      </aside>
     </div>
   </main>
 </section>
 
 <script>
 const COURSES={
- "ed979e45981b759b2ccfcbf027ad4cc0a754538b0ce5d41e20641bc51e6aa579":{
-   title:"ห้องเรียน AI Render",sub:"เรนเดอร์งานออกแบบด้วย AI · เรียงตามลำดับในเพลย์ลิสต์",
-   videos:[{label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PLGIFCbS9M2nI"}],
-   side:[{h:"ไฟล์ประกอบการเรียน",items:[{name:"รวมไฟล์แถม",note:"โฟลเดอร์ Google Drive",url:"https://drive.google.com/drive/folders/16jAI7aWoHxPZizXIZgBrnjs4de0qsghr?usp=drive_link",btn:"เปิดโฟลเดอร์"}]}]},
- "eaf119514659555e3576cffd0f0ced577621f7d7b494daff99ac2e56442c38dd":{
-   title:"SketchUp for Computer",sub:"เริ่มจากติดตั้งโปรแกรม แล้วเรียนตามลำดับ EP",
-   videos:[{label:"วิธีติดตั้งโปรแกรม",tag:"เริ่มที่นี่",id:"bLOg59TpaJM"},
-           {label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PL-SBvrSFsrgRvBLrgYzrgLWgj63A1gfIC"}],
-   side:[{h:"ก่อนเริ่มเรียน",items:[{name:"ดาวน์โหลดโปรแกรม",note:"ไฟล์บน Google Drive",pw:"sbz",url:"https://drive.google.com/file/d/1RFj3EWgqLLgwps2UVi1UMo54vRFfXGAs/view",btn:"ดาวน์โหลด"}]}],
-   tip:"ดาวน์โหลดโปรแกรม ดูวิธีติดตั้ง แล้วไปที่แท็บบทเรียนทั้งหมด"},
- "68ae2c36254d65733509a97300cd2e1295186b9ff4054e2b6eb70174cacd032b":{
-   title:"SketchUp for iPad",sub:"เรียน SketchUp บน iPad เรียงตามลำดับในเพลย์ลิสต์",
-   videos:[{label:"บทเรียนทั้งหมด",tag:"PLAYLIST",list:"PL-SBvrSFsrgQgPBW-N7JWVq8ylRCdEps8"}],
-   side:[]}
+ "ed979e45981b759b2ccfcbf027ad4cc0a754538b0ce5d41e20641bc51e6aa579":{key:"ai",
+   title:"ห้องเรียน AI Render",sub:"เรนเดอร์งานออกแบบด้วย AI · 6 EP",
+   eps:[["EP1","Intro แนะนำห้องเรียนและ Gemini","Rvi8EDyeXcg"],
+        ["EP2","การเตรียมไฟล์รูปภาพจาก SketchUp","Ct1vqqBHui0"],
+        ["EP3","Exterior AI Render","RBFE85M4Ryw"],
+        ["EP4","Interior AI Render","fMekc-EpP74"],
+        ["EP5","Plan 2D และ 3D โดย AI Render","UM7wYojjBLk"],
+        ["EP6","ลบลายน้ำและขยายขนาดภาพ","N3F2uhCdASc"]],
+   materials:[{name:"รวมไฟล์แถม",note:"โฟลเดอร์ Google Drive",url:"https://drive.google.com/drive/folders/16jAI7aWoHxPZizXIZgBrnjs4de0qsghr?usp=drive_link",btn:"เปิดโฟลเดอร์"}]},
+ "eaf119514659555e3576cffd0f0ced577621f7d7b494daff99ac2e56442c38dd":{key:"pc",
+   title:"SketchUp for Computer",sub:"ดาวน์โหลดและติดตั้งโปรแกรมก่อน แล้วเรียนตามลำดับ EP0–EP15",
+   eps:[["ติดตั้ง","วิธีติดตั้งโปรแกรม","bLOg59TpaJM"],
+        ["EP0","ห้องเรียน SketchUp By Boss","p5glLtGY6QI","0:33"],
+        ["EP1","แนะนำโปรแกรม SketchUp","8B0CN4TToYw","1:41"],
+        ["EP2","รู้จักหน้าตาและเครื่องมือพื้นฐาน","1gEp8_XXVZ4","9:02"],
+        ["EP3","การเคลื่อนกล้องและมุมมอง","4NHmw7OnD_M","8:18"],
+        ["EP4","การวาดวัตถุ 2 มิติ","lyZh3Dj85gM","9:45"],
+        ["EP5","การขึ้นรูป 3 มิติ","PVYsaIVqncs","8:03"],
+        ["EP6","การเลือกและแก้ไขวัตถุ","gnIoSKqxwJ4","11:57"],
+        ["EP7","การใช้ Group และ Component","bC4wANnRPHM","10:27"],
+        ["EP8","การใช้เครื่องมือวัดและไกด์","Dj9UQQDlip8","4:41"],
+        ["EP9","การทำ Scene และการจัดมุมกล้อง","IsEaxbMXb1w","6:59"],
+        ["EP10","การใส่ Material และการระบายสี","BHCnapGtz04","7:40"],
+        ["EP11","การใช้ Layers และ Tags (เวอร์ชันใหม่)","F_B5uaCao3c","4:53"],
+        ["EP12","การใส่ข้อความและขนาด","RfVAK16evOQ","6:32"],
+        ["EP13","การ Import/Export ไฟล์","ztFo82og7bA","4:52"],
+        ["EP14","การใช้งาน Extension (ปลั๊กอิน)","uT9DNRBlNIE","2:54"],
+        ["EP15","โปรเจกต์ตัวอย่าง – สร้างโมเดลง่าย ๆ","fQQ1eV4sbuk","27:17"]],
+   materials:[{name:"ดาวน์โหลดโปรแกรม",note:"ไฟล์บน Google Drive",pw:"sbz",url:"https://drive.google.com/file/d/1RFj3EWgqLLgwps2UVi1UMo54vRFfXGAs/view",btn:"ดาวน์โหลด"}]},
+ "68ae2c36254d65733509a97300cd2e1295186b9ff4054e2b6eb70174cacd032b":{key:"ipad",
+   title:"SketchUp for iPad",sub:"เรียน SketchUp บน iPad · 7 EP",
+   eps:[["EP1","ทำความรู้จักกับ SketchUp for iPad","z4_LE_3yhZk","18:09"],
+        ["EP2","เครื่องมือพื้นฐาน Part 1","eXlWsiODXaI","29:16"],
+        ["EP3","เครื่องมือพื้นฐาน Part 2","tiKj-HsCUYI","18:01"],
+        ["EP4","สร้าง Models 3D Part 1","BNxILZ3nUh4","24:21"],
+        ["EP5","สร้าง Models 3D Part 2","uaLttXatUu4","23:14"],
+        ["EP6","การจัด Scenes มุมกล้อง Styles และ Section","_SDg2JscejM","7:29"],
+        ["EP7","สรุปหลังเรียน","JoSYNz9tWYc","4:46"]],
+   materials:[]}
 };
-const KEY="bossClassCode";
-const store={get(){try{return localStorage.getItem(KEY)}catch(e){return null}},
-  set(v){try{localStorage.setItem(KEY,v)}catch(e){}},del(){try{localStorage.removeItem(KEY)}catch(e){}}};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 
-function play(v){
-  const src=v.list?`https://www.youtube.com/embed/videoseries?list=${v.list}&rel=0`:`https://www.youtube.com/embed/${v.id}?rel=0`;
-  document.getElementById("yt").src=src;
-  document.getElementById("ytLink").href=v.list?`https://www.youtube.com/playlist?list=${v.list}`:`https://youtu.be/${v.id}`;
+let course=null, cur=0, seen=new Set(), player=null, apiReady=false;
+
+/* YouTube player: use the IFrame API when it loads (auto-next), otherwise a plain embed */
+window.onYouTubeIframeAPIReady=()=>{apiReady=true; if(course) mountPlayer();};
+(function(){const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";s.async=true;document.head.appendChild(s)})();
+
+function mountPlayer(){
+  const id=course.eps[cur][2];
+  if(apiReady&&window.YT&&YT.Player){
+    if(player&&player.loadVideoById){player.loadVideoById(id);return}
+    const host=document.getElementById("yt");
+    if(host.tagName==="IFRAME"){const d=document.createElement("div");d.id="yt";host.replaceWith(d)}
+    player=new YT.Player("yt",{videoId:id,playerVars:{rel:0,playsinline:1},
+      events:{onStateChange:e=>{if(e.data===YT.PlayerState.ENDED&&cur<course.eps.length-1)go(cur+1,true)}}});
+  }else{
+    let f=document.getElementById("yt");
+    if(f.tagName!=="IFRAME"){const n=document.createElement("iframe");n.id="yt";n.title="วิดีโอบทเรียน";
+      n.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";n.allowFullscreen=true;
+      n.referrerPolicy="strict-origin-when-cross-origin";f.replaceWith(n);f=n}
+    f.src=`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`;
+  }
+}
+function go(i,auto){
+  cur=i;
+  const ep=course.eps[i];
+  seen.add(ep[2]); ls.set("seen-"+course.key,JSON.stringify([...seen])); ls.set("last-"+course.key,String(i));
+  document.getElementById("nowTitle").textContent=`${ep[0]} · ${ep[1]}`;
+  document.getElementById("ytLink").href=`https://youtu.be/${ep[2]}`;
+  document.getElementById("prev").disabled=i===0;
+  document.getElementById("next").disabled=i===course.eps.length-1;
+  renderEps();
+  mountPlayer();
+  if(!auto&&window.innerWidth<900)document.querySelector(".player").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function renderEps(){
+  const list=document.getElementById("eps");
+  list.innerHTML=course.eps.map((e,i)=>`<li><button type="button" data-i="${i}" aria-current="${i===cur}">
+    <span class="no">${esc(e[0])}</span><span class="t">${esc(e[1])}</span>
+    <span class="d">${seen.has(e[2])?'<span class="seen" title="ดูแล้ว">✓</span>':""}${e[3]||""}</span></button></li>`).join("");
+  const n=course.eps.filter(e=>seen.has(e[2])).length;
+  document.getElementById("progress").textContent=`ดูแล้ว ${n}/${course.eps.length}`;
+  const a=list.querySelector('[aria-current="true"]'); if(a){const r=a.offsetTop-list.offsetTop; if(r<list.scrollTop||r>list.scrollTop+list.clientHeight-50) list.scrollTop=r-8}
 }
 function openRoom(c){
+  course=c;
+  try{seen=new Set(JSON.parse(ls.get("seen-"+c.key)||"[]"))}catch(e){seen=new Set()}
+  const last=parseInt(ls.get("last-"+c.key)||"0",10);
   document.getElementById("gate").hidden=true;
   document.getElementById("room").hidden=false;
   document.getElementById("rTitle").textContent=c.title;
   document.getElementById("rSub").textContent=c.sub;
-  const tabs=document.getElementById("tabs");
-  tabs.innerHTML=c.videos.map((v,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===0}"><small>${esc(v.tag)}</small>${esc(v.label)}</button>`).join("");
-  tabs.hidden=c.videos.length<2;
-  tabs.onclick=e=>{const b=e.target.closest("button");if(!b)return;
-    tabs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));play(c.videos[+b.dataset.i])};
-  play(c.videos[0]);
-  const side=document.getElementById("side");
-  side.innerHTML=(c.tip?`<div class="box"><h3>ลำดับการเรียน</h3><p class="tip">${esc(c.tip)}</p></div>`:"")+
-    c.side.map(s=>`<div class="box"><h3>${esc(s.h)}</h3><ul class="items">${s.items.map(it=>`<li><b>${esc(it.name)}</b><small>${esc(it.note)}</small>
-      ${it.pw?`<div class="pw">รหัสแตกไฟล์ <kbd>${esc(it.pw)}</kbd><button type="button" data-copy="${esc(it.pw)}">คัดลอก</button></div>`:""}
-      <a class="go" href="${it.url}" target="_blank" rel="noopener">${esc(it.btn)} ↗</a></li>`).join("")}</ul></div>`).join("");
-  side.hidden=!side.innerHTML;
+  const mats=document.getElementById("materials");
+  mats.innerHTML=c.materials.map(it=>`<div class="items"><b>${esc(it.name)}</b><small>${esc(it.note)}</small>
+    ${it.pw?`<div class="pw">รหัสแตกไฟล์ <kbd>${esc(it.pw)}</kbd><button type="button" data-copy="${esc(it.pw)}">คัดลอก</button></div>`:""}
+    <a class="go" href="${it.url}" target="_blank" rel="noopener">${esc(it.btn)} ↗</a></div>`).join("");
+  document.getElementById("matBox").hidden=!c.materials.length;
   window.scrollTo(0,0);
+  go(last>=0&&last<c.eps.length?last:0,true);
 }
 function closeRoom(){
-  store.del();document.getElementById("yt").src="about:blank";
+  ls.del("bossClassCode");
+  if(player&&player.stopVideo)player.stopVideo();
+  const f=document.getElementById("yt"); if(f.tagName==="IFRAME")f.src="about:blank";
+  course=null;
   document.getElementById("room").hidden=true;document.getElementById("gate").hidden=false;
   document.getElementById("code").value="";document.getElementById("code").focus();
 }
@@ -183,9 +273,12 @@ document.getElementById("codeForm").addEventListener("submit",async e=>{
   const v=document.getElementById("code").value.trim().toUpperCase().replace(/[\s-]/g,"");
   if(!v){err.textContent="กรุณาใส่รหัสเข้าเรียน";err.hidden=false;return}
   const h=await sha(v);
-  if(COURSES[h]){err.hidden=true;store.set(h);openRoom(COURSES[h])}
+  if(COURSES[h]){err.hidden=true;ls.set("bossClassCode",h);openRoom(COURSES[h])}
   else{err.textContent="รหัสไม่ถูกต้อง ตรวจสอบตัวอักษรอีกครั้ง หรือทักแชทเพจเพื่อขอรหัส";err.hidden=false}
 });
+document.getElementById("eps").addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)go(+b.dataset.i)});
+document.getElementById("prev").addEventListener("click",()=>cur>0&&go(cur-1));
+document.getElementById("next").addEventListener("click",()=>cur<course.eps.length-1&&go(cur+1));
 document.getElementById("logout").addEventListener("click",closeRoom);
 document.addEventListener("click",e=>{
   const cp=e.target.closest("[data-copy]");if(!cp)return;
@@ -193,7 +286,9 @@ document.addEventListener("click",e=>{
   const sel=()=>{const r=document.createRange();r.selectNodeContents(cp.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r)};
   try{navigator.clipboard.writeText(cp.dataset.copy).then(done,sel)}catch(_){sel()}
 });
-const saved=store.get();
+/* If the YouTube API can't load (blocked network), fall back to a plain embed after a short wait */
+setTimeout(()=>{if(!apiReady&&course&&document.getElementById("yt").tagName!=="IFRAME")mountPlayer()},2500);
+const saved=ls.get("bossClassCode");
 if(saved&&COURSES[saved])openRoom(COURSES[saved]);
 </script>
 </body>
